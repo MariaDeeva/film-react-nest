@@ -1,56 +1,53 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { GetScheduleDto,GetFilmsDto, CreateFilmsDto } from '../films/dto/films.dto'; 
-import { Film, FilmDocument } from '../films/films.schema'; 
-import { InjectModel } from '@nestjs/mongoose';
-
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Film } from '../films/entities/films.entity';
+import { CreateFilmsDto } from '../films/dto/films.dto';
+import { Schedule } from '../films/entities/shedule.entity';
 
 @Injectable()
 export class FilmsRepository {
-  constructor(@InjectModel(Film.name) private filmModel: Model<FilmDocument>) {}
+  constructor(
+    @InjectRepository(Film)
+    private filmRepository: Repository<Film>,
+  ) {}
 
-  async findAll(): Promise<GetFilmsDto[]> {
-    const films = await this.filmModel.find({}).lean().exec(); 
+  async findAll(): Promise<{ items: Film[]; total: number }> {
+    const [items, total] = await Promise.all([
+      this.filmRepository.find({ relations: ['schedule'] }),
+      this.filmRepository.count(),
+    ]);
 
-    if (!films || films.length === 0) {
-      throw new NotFoundException('Не найден фильм для показа');
-    }
+    return { items, total };
+  }
+  async findOne(
+    id: string,
+  ): Promise<{ items: Schedule[] | null; total: number }> {
+    const film = await this.filmRepository.findOne({
+      where: { id },
+      relations: ['schedule'],
+    });
+    const total = film ? film.schedule.length : 0;
 
-    return films.map((film) => this.mapFilmToDto(film));
+    return { items: film ? film.schedule : null, total };
   }
 
-  async findById(id: string): Promise<GetScheduleDto[]> {
-    const film = await this.filmModel.findOne({ id }).lean().exec();
+  async create(createFilmDto: CreateFilmsDto): Promise<Film> {
+    const newFilm = this.filmRepository.create({
+      ...createFilmDto,
+      schedule: createFilmDto.schedule.map((scheduleDto) => {
+        const schedule = new Schedule();
 
-    if (!film) {
-      throw new NotFoundException('Фильм не найден');
-    }
-
-    return film.schedule;
-  }
-
-  async findFilm(id: string): Promise<GetFilmsDto | null> {
-    const film = await this.filmModel.findOne({ id }).lean().exec();
-    return film ? this.mapFilmToDto(film) : null;
-  }
- async create(createFilmDto: CreateFilmsDto): Promise<GetFilmsDto> {
-    const newFilm = new this.filmModel(createFilmDto);
-    const savedFilm = await newFilm.save();
-    return this.mapFilmToDto(savedFilm);
-  }
-
-  private mapFilmToDto(film: any): GetFilmsDto {
-      return {
-          id: film.id,
-          rating: film.rating,
-          director: film.director,
-          tags: film.tags,
-          image: film.image,
-          cover: film.cover,
-          title: film.title,
-          about: film.about,
-          description: film.description,
-          schedule: film.schedule,
-      };
+        schedule.daytime = scheduleDto.daytime;
+        schedule.hall = scheduleDto.hall;
+        schedule.rows = scheduleDto.rows;
+        schedule.seats = scheduleDto.seats;
+        schedule.price = scheduleDto.price;
+        schedule.taken = scheduleDto.taken;
+        return schedule;
+      }),
+    });
+    const savedFilm = await this.filmRepository.save(newFilm);
+    return savedFilm;
   }
 }
