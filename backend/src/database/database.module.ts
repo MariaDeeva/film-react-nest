@@ -13,7 +13,7 @@ import { Schedule } from '../films/entities/shedule.entity';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       entities: [Film, Schedule],
-      synchronize: true, 
+      synchronize: true,
     }),
     TypeOrmModule.forFeature([Film, Schedule]),
   ],

@@ -1,9 +1,8 @@
-
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Film } from '../films/entities/films.entity';
-import { CreateFilmsDto, GetFilmsDto, GetScheduleDto } from '../films/dto/films.dto';
+import { CreateFilmsDto } from '../films/dto/films.dto';
 import { Schedule } from '../films/entities/shedule.entity';
 
 @Injectable()
@@ -11,7 +10,7 @@ export class FilmsRepository {
   constructor(
     @InjectRepository(Film)
     private filmRepository: Repository<Film>,
-  ) { }
+  ) {}
 
   async findAll(): Promise<{ items: Film[]; total: number }> {
     const [items, total] = await Promise.all([
@@ -33,11 +32,10 @@ export class FilmsRepository {
     return { items: film ? film.schedule : null, total };
   }
 
-
   async create(createFilmDto: CreateFilmsDto): Promise<Film> {
     const newFilm = this.filmRepository.create({
       ...createFilmDto,
-      schedule: createFilmDto.schedule.map(scheduleDto => {
+      schedule: createFilmDto.schedule.map((scheduleDto) => {
         const schedule = new Schedule();
 
         schedule.daytime = scheduleDto.daytime;
@@ -52,6 +50,4 @@ export class FilmsRepository {
     const savedFilm = await this.filmRepository.save(newFilm);
     return savedFilm;
   }
-
 }
-

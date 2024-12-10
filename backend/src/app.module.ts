@@ -27,6 +27,3 @@ import { DatabaseModule } from './database/database.module';
   providers: [configProvider, OrderService, FilmsService, FilmsRepository],
 })
 export class AppModule {}
-
-
-
