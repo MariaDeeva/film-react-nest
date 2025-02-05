@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/MariaDeeva/film-react-nest/backend:latest  
+    image: ghcr.io/mariadeeva/film-react-nest/backend:latest  
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -19,7 +19,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: ghcr.io/MariaDeeva/film-react-nest/frontend:latest 
+    image: ghcr.io/mariadeeva/film-react-nest/frontend:latest 
     container_name: frontend
     volumes:
       - frontend_volume:/app/dist
