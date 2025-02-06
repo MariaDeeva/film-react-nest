@@ -17,7 +17,7 @@ import { Schedule } from '../films/entities/schedule.entity';
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
         entities: [Film, Schedule],
-        synchronize: true,
+        synchronize: false,
       }),
       inject: [ConfigService],
     }),
