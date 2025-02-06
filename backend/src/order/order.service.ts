@@ -12,7 +12,7 @@ import { CreateOrdersDto, TicketsDto } from './dto/order.dto';
 export class OrderService {
   constructor(
     @InjectRepository(Film)
-    private readonly filmRepository: Repository<Film>, 
+    private readonly filmRepository: Repository<Film>,
   ) {}
   async createOrder(orderDto: CreateOrdersDto): Promise<string> {
     const { tickets } = orderDto;
@@ -37,7 +37,7 @@ export class OrderService {
     }
 
     schedule.taken.push(seatCode);
-    await this.filmRepository.save(filmDoc); 
+    await this.filmRepository.save(filmDoc);
   }
 
   async findFilmById(filmId: string): Promise<Film> {

@@ -13,9 +13,8 @@ describe('TskvLogger', () => {
 
   it('should format log message correctly', () => {
     const message = 'Test log message';
-    const expectedTime = new Date().toISOString();
     const formattedMessage = logger.formatMessage('log', message);
-    
+
     expect(formattedMessage).toMatch(/time=[\d\-T:.Z]+/); // Проверяем, что время соответствует формату ISO
     expect(formattedMessage).toContain(`level=log`);
     expect(formattedMessage).toContain(`message=${message}`);
@@ -65,8 +64,13 @@ describe('TskvLogger', () => {
     const message = 'Test message with params';
     const param1 = 'param1Value';
     const param2 = 'param2Value';
-    const formattedMessage = logger.formatMessage('log', message, param1, param2);
-    
+    const formattedMessage = logger.formatMessage(
+      'log',
+      message,
+      param1,
+      param2,
+    );
+
     expect(formattedMessage).toContain(`param0=${param1}`);
     expect(formattedMessage).toContain(`param1=${param2}`);
   });

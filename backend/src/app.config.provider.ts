@@ -4,9 +4,7 @@ export const configProvider = {
   imports: [ConfigModule.forRoot()],
   provide: 'CONFIG',
   useValue: <AppConfig>{
-    database: {
-   
-    },
+    database: {},
   },
 };
 
