@@ -31,7 +31,7 @@ jobs:
         context: ./backend
         file: ./backend/Dockerfile
         push: true
-        tags: ghcr.io/mariadeeva/backend:latest
+        tags: ghcr.io/mariadeeva/film-react-nest/backend:latest
         
     - name: Build/Push frontend image
       uses: docker/build-push-action@v3
@@ -39,4 +39,4 @@ jobs:
         context: ./frontend
         file: ./frontend/Dockerfile
         push: true
-        tags: ghcr.io/mariadeeva/frontend:latest
+        tags: ghcr.io/mariadeeva/film-react-nest/frontend:latest
