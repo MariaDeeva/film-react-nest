@@ -1,5 +1,9 @@
 # FILM!
+## Ссылки
 
+Ссылка проект http://mariamdeeva.nomorepartiesco.ru/
+
+Ссылка на PGAdmin: http://mariamdeeva.nomorepartiesco.ru:8080/
 ## Установка
 
 ### MongoDB
