@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'node:path';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { configProvider } from './app.config.provider';
 import { FilmsController } from './films/films.controller';
@@ -9,6 +10,7 @@ import { OrderController } from './order/order.controller';
 import { OrderService } from './order/order.service';
 import { FilmsService } from './films/films.service';
 import { FilmsRepository } from './repository/films.repository';
+import { Film } from './films/entities/films.entity';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -18,6 +20,7 @@ import { DatabaseModule } from './database/database.module';
       cache: true,
     }),
     DatabaseModule,
+    TypeOrmModule.forFeature([Film]),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'public'),
       renderPath: '/content/afisha/',

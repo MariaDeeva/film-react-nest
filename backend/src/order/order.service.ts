@@ -3,17 +3,17 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Film, FilmDocument } from '../films/films.schema';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Film } from '../films/entities/films.entity';
 import { CreateOrdersDto, TicketsDto } from './dto/order.dto';
 
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel(Film.name) private readonly filmModel: Model<FilmDocument>,
+    @InjectRepository(Film)
+    private readonly filmRepository: Repository<Film>,
   ) {}
-
   async createOrder(orderDto: CreateOrdersDto): Promise<string> {
     const { tickets } = orderDto;
 
@@ -37,19 +37,23 @@ export class OrderService {
     }
 
     schedule.taken.push(seatCode);
-    await filmDoc.save();
+    await this.filmRepository.save(filmDoc);
   }
 
-  async findFilmById(filmId: string): Promise<FilmDocument> {
-    const filmDoc = await this.filmModel.findOne({ id: filmId }).exec();
+  async findFilmById(filmId: string): Promise<Film> {
+    const filmDoc = await this.filmRepository.findOne({
+      where: { id: filmId },
+      relations: ['schedule'],
+    });
     if (!filmDoc) {
       throw new NotFoundException(`Фильм ${filmId} не найден.`);
     }
     return filmDoc;
   }
 
-  private findSessionInFilm(filmDoc: FilmDocument, sessionId: string) {
-    const schedule = filmDoc.schedule.find((s) => s.id === sessionId);
+  private findSessionInFilm(filmDoc: Film, sessionId: string) {
+    const sessionIdAsNumber = Number(sessionId);
+    const schedule = filmDoc.schedule.find((s) => s.id === sessionIdAsNumber);
     if (!schedule) {
       throw new NotFoundException(
         `Такого сеанса нет ${sessionId} для фильма ${filmDoc.id}.`,

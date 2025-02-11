@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Film } from '../films/entities/films.entity';
 import { CreateFilmsDto } from '../films/dto/films.dto';
-import { Schedule } from '../films/entities/shedule.entity';
+import { Schedule } from '../films/entities/schedule.entity';
 
 @Injectable()
 export class FilmsRepository {
@@ -42,6 +42,9 @@ export class FilmsRepository {
         schedule.hall = scheduleDto.hall;
         schedule.rows = scheduleDto.rows;
         schedule.seats = scheduleDto.seats;
+       // if (scheduleDto.price === undefined || scheduleDto.price === null) {
+     //     throw new BadRequestException('Price must not be null or undefined');
+     //   }
         schedule.price = scheduleDto.price;
         schedule.taken = scheduleDto.taken;
         return schedule;
